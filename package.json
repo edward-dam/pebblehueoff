@@ -1,0 +1,53 @@
+{
+    "author": "Edward Dam",
+    "dependencies": {
+        "pebblejs": "1.0.0"
+    },
+    "keywords": [],
+    "name": "hue-off-v1.0",
+    "pebble": {
+        "displayName": "Hue Off v1.0",
+        "enableMultiJS": true,
+        "messageKeys": [],
+        "projectType": "native",
+        "resources": {
+            "media": [
+                {
+                    "file": "images/splash.png",
+                    "name": "SPLASH",
+                    "targetPlatforms": [
+                        "aplite",
+                        "basalt",
+                        "chalk",
+                        "diorite"
+                    ],
+                    "type": "bitmap"
+                },
+                {
+                    "file": "images/menu_icon.png",
+                    "menuIcon": true,
+                    "name": "MENU_ICON",
+                    "targetPlatforms": [
+                        "aplite",
+                        "basalt",
+                        "chalk",
+                        "diorite"
+                    ],
+                    "type": "bitmap"
+                }
+            ]
+        },
+        "sdkVersion": "3",
+        "targetPlatforms": [
+            "aplite",
+            "basalt",
+            "chalk",
+            "diorite"
+        ],
+        "uuid": "544f6161-2801-488f-9076-313422a3f1a4",
+        "watchapp": {
+            "watchface": false
+        }
+    },
+    "version": "1.0.0"
+}
