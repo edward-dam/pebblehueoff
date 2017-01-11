@@ -3,6 +3,11 @@
 // pebblejs
 require('pebblejs');
 
+// clayjs
+var Clay       = require('pebble-clay');
+var clayConfig = require('./config');
+var clay = new Clay(clayConfig);
+
 // libraries
 var UI      = require('pebblejs/ui');
 var Vector2 = require('pebblejs/lib/vector2');
