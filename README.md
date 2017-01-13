@@ -24,6 +24,7 @@ Control your Philips Hue light bulbs.<br />
 
 Initial Setup
  - Press select to discover bridge and begin pairing process.
+ 
 Controlling Light Bulbs
 - Press select to switch on/off
 - Long press select to adjust brightness levels
