@@ -19,10 +19,10 @@ https://apps.getpebble.com/applications/58750eb65de85036d5000047
 
 ###description
 
-Control your Philips Hue light bulbs.
+Control your Philips Hue light bulbs.<br /><br />
 
 Initial Setup
- - Press select to discover bridge and begin pairing process.
+ - Press select to discover bridge and begin pairing process.<br /><br />
 
 Controlling Light Bulbs
 - Press select to switch on/off
