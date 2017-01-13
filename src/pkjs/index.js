@@ -15,10 +15,14 @@ var ajax     = require('pebblejs/lib/ajax');
 var Settings = require('pebblejs/settings');
 
 // hue data
-collectbridgeip();
 var ipAddress;
-var userName = Settings.data('username');
-console.log('Loaded userName: ' + userName);
+console.log('Saved bridgeIp: ' + Settings.data('hueip'));
+collectbridgeip();
+var userName = Settings.data('hueuser');
+console.log('Saved userName: ' + userName);
+if ( userName ) {
+  collectbridgelights();
+}
 
 // definitions
 var window = new UI.Window();
@@ -29,7 +33,7 @@ var textAlign = 'center';
 var fontLarge = 'gothic-28-bold';
 var fontMedium = 'gothic-24-bold';
 var fontSmall = 'gothic-18-bold';
-var fontXSmall = 'gothic-14-bold';
+//var fontXSmall = 'gothic-14-bold';
 function position(height){
   return new Vector2(0, windowSize.y / 2 + height);
 }
@@ -92,8 +96,8 @@ mainWind.on('click', 'down', function(e) {
 // select button
 mainWind.on('click', 'select', function(e) {
 
-  // load saved data
-  var bridgeIp = Settings.data('bridgeip');
+  // load collected bridge ip
+  var bridgeIp = Settings.data('hueip');
   console.log('Loaded bridgeIp: ' + bridgeIp);
   
   // no bridge ip found
@@ -126,11 +130,11 @@ mainWind.on('click', 'select', function(e) {
     ipAddress = bridgeIp[0].internalipaddress;
     console.log('Determined ipAddress: ' + ipAddress);
     
-    // reload saved data
-    userName = Settings.data('username');
+    // reload saved pairing
+    userName = Settings.data('hueuser');
     console.log('Reloaded userName: ' + userName);
     
-    // collect new username
+    // no pairing found
     if ( userName === undefined || userName === null ) {
       var linkWind = new UI.Window();
       var linkHead = new UI.Text({
@@ -152,7 +156,18 @@ mainWind.on('click', 'select', function(e) {
         collectbridgeuser();
         linkWind.hide();
       });
-    } 
+    }
+    
+    // pairing found
+    if ( userName ) {
+      
+      // load lights
+      
+      // no lights found
+      
+      // lights found
+      
+    }
   }
   
 });
@@ -164,7 +179,7 @@ function collectbridgeip() {
   ajax({ url: nupnpURL, method: 'get', type: 'json' },
     function(api) {
       console.log('Collected bridgeIp: ' + api);
-      Settings.data('bridgeip', api);
+      Settings.data('hueip', api);
     }
   );
 }
@@ -178,10 +193,10 @@ function collectbridgeuser() {
       console.log('Collected bridgeUser: ' + json);
       if ('success' in json[0]) {
         console.log('Collected userName: ' + json[0].success.username);
-        Settings.data('username', json[0].success.username);
+        Settings.data('hueuser', json[0].success.username);
       } else {
         console.log('Collected userName: ' + json[0].error.description);
-        Settings.data('username', null);
+        Settings.data('hueuser', null);
       }
     }
   );
