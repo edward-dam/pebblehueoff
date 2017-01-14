@@ -40,13 +40,11 @@ function position(height){
 
 // main screen
 var mainWind = new UI.Window();
-var mainText = new UI.Text({
-  size: size, backgroundColor: backgroundColor, textAlign: textAlign,
-  font: fontLarge
-});
+var mainText = new UI.Text({size: size, backgroundColor: backgroundColor, textAlign: textAlign});
 var mainImage = new UI.Image({size: size});
 mainText.position(position(-65));
 mainImage.position(position(-65));
+mainText.font(fontLarge);
 mainText.text('HUE OFF');
 mainImage.image('images/splash.png');
 mainWind.add(mainText);
@@ -56,16 +54,12 @@ mainWind.show();
 // up screen
 mainWind.on('click', 'up', function(e) {
   var upWind = new UI.Window();
-  var upHead = new UI.Text({
-    size: size, backgroundColor: backgroundColor, textAlign: textAlign,
-    font: fontLarge
-  });
-  var upText = new UI.Text({
-    size: size, backgroundColor: backgroundColor, textAlign: textAlign,
-    font: fontMedium
-  });
+  var upHead = new UI.Text({size: size, backgroundColor: backgroundColor, textAlign: textAlign});
+  var upText = new UI.Text({size: size, backgroundColor: backgroundColor, textAlign: textAlign});
   upHead.position(position(-35));
   upText.position(position(-5));
+  upHead.font(fontLarge);
+  upText.font(fontMedium);
   upHead.text('Philips Hue');
   upText.text('www.meethue.com');
   upWind.add(upHead);
@@ -76,16 +70,12 @@ mainWind.on('click', 'up', function(e) {
 // down screen
 mainWind.on('click', 'down', function(e) {
   var downWind = new UI.Window();
-  var downHead = new UI.Text({
-    size: size, backgroundColor: backgroundColor, textAlign: textAlign,
-    font: fontMedium
-  });
-  var downText = new UI.Text({
-    size: size, backgroundColor: backgroundColor, textAlign: textAlign,
-    font: fontSmall
-  });
+  var downHead = new UI.Text({size: size, backgroundColor: backgroundColor, textAlign: textAlign});
+  var downText = new UI.Text({size: size, backgroundColor: backgroundColor, textAlign: textAlign});
   downHead.position(position(-30));
   downText.position(position(-5));
+  downHead.font(fontMedium);
+  downText.font(fontSmall);
   downHead.text('Hue Off v1.0');
   downText.text('by Edward Dam');
   downWind.add(downHead);
@@ -104,16 +94,12 @@ mainWind.on('click', 'select', function(e) {
   var foundbridge = false;
   if ( bridgeIp.length === 0 ) {
     var noIpWind = new UI.Window();
-    var noIpHead = new UI.Text({
-      size: size, backgroundColor: backgroundColor, textAlign: textAlign,
-      font: fontMedium
-    });
-    var noIpText = new UI.Text({
-      size: size, backgroundColor: backgroundColor, textAlign: textAlign,
-      font: fontSmall
-    });
+    var noIpHead = new UI.Text({size: size, backgroundColor: backgroundColor, textAlign: textAlign});
+    var noIpText = new UI.Text({size: size, backgroundColor: backgroundColor, textAlign: textAlign});
     noIpHead.position(position(-30));
     noIpText.position(position(0));
+    noIpHead.font(fontMedium);
+    noIpText.font(fontSmall);
     noIpHead.text('No Bridge Found!');
     noIpText.text('Check Your WiFi');
     noIpWind.add(noIpHead);
@@ -137,16 +123,12 @@ mainWind.on('click', 'select', function(e) {
     // no pairing found
     if ( userName === undefined || userName === null ) {
       var linkWind = new UI.Window();
-      var linkHead = new UI.Text({
-        size: size, backgroundColor: backgroundColor, textAlign: textAlign,
-        font: fontMedium
-      });
-      var linkText = new UI.Text({
-        size: size, backgroundColor: backgroundColor, textAlign: textAlign,
-        font: fontSmall
-      });
+      var linkHead = new UI.Text({size: size, backgroundColor: backgroundColor, textAlign: textAlign});
+      var linkText = new UI.Text({size: size, backgroundColor: backgroundColor, textAlign: textAlign});
       linkHead.position(position(-45));
       linkText.position(position(-10));
+      linkHead.font(fontMedium);
+      linkText.font(fontSmall);
       linkHead.text('Pair Bridge!');
       linkText.text('1. Press Bridge\n2. Click Watch');
       linkWind.add(linkHead);
@@ -175,8 +157,8 @@ mainWind.on('click', 'select', function(e) {
 // functions
 
 function collectbridgeip() {
-  var nupnpURL = 'https://www.meethue.com/api/nupnp' ;
-  ajax({ url: nupnpURL, method: 'get', type: 'json' },
+  var url = 'https://www.meethue.com/api/nupnp' ;
+  ajax({ url: url, method: 'get', type: 'json' },
     function(api) {
       console.log('Collected bridgeIp: ' + api);
       Settings.data('hueip', api);
@@ -185,9 +167,9 @@ function collectbridgeip() {
 }
 
 function collectbridgeuser() {
-  var apiURL = 'http://' + ipAddress + '/api' ;
-  var message = '{"devicetype":"pebble#hueoff"}';
-  ajax({ url: apiURL, method: 'post', type: 'text', data: message },
+  var url = 'http://' + ipAddress + '/api' ;
+  var data = '{"devicetype":"pebble#hueoff"}';
+  ajax({ url: url, method: 'post', type: 'text', data: data },
     function(api) {
       var json = JSON.parse(api);
       console.log('Collected bridgeUser: ' + json);
