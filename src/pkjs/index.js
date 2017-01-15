@@ -14,16 +14,6 @@ var Vector2  = require('pebblejs/lib/vector2');
 var ajax     = require('pebblejs/lib/ajax');
 var Settings = require('pebblejs/settings');
 
-// hue data
-var ipAddress;
-console.log('Saved bridgeIp: ' + Settings.data('hueip'));
-collectbridgeip();
-var userName = Settings.data('hueuser');
-console.log('Saved userName: ' + userName);
-if ( userName ) {
-  collectbridgelights();
-}
-
 // definitions
 var window = new UI.Window();
 var windowSize = window.size();
@@ -36,6 +26,18 @@ var fontSmall = 'gothic-18-bold';
 //var fontXSmall = 'gothic-14-bold';
 function position(height){
   return new Vector2(0, windowSize.y / 2 + height);
+}
+
+// hue api data
+var ipAddress = Settings.data('hueip');
+var userName = Settings.data('hueuser');
+var lightBulbs = Settings.data('huelights');
+console.log('Saved ipAddress: ' + Settings.data('hueip'));
+console.log('Saved userName: ' + userName);
+console.log('Saved lightBulbs: ' + lightBulbs);
+collectbridgeip();
+if ( ipAddress && userName ) {
+  collectbridgelights();
 }
 
 // main screen
@@ -86,13 +88,12 @@ mainWind.on('click', 'down', function(e) {
 // select button
 mainWind.on('click', 'select', function(e) {
 
-  // load collected bridge ip
-  var bridgeIp = Settings.data('hueip');
-  console.log('Loaded bridgeIp: ' + bridgeIp);
+  // reload saved ip
+  ipAddress = Settings.data('hueip');
+  console.log('Reloaded ipAddress: ' + ipAddress);
   
   // no bridge ip found
-  var foundbridge = false;
-  if ( bridgeIp.length === 0 ) {
+  if ( !ipAddress ) {
     var noIpWind = new UI.Window();
     var noIpHead = new UI.Text({size: size, backgroundColor: backgroundColor, textAlign: textAlign});
     var noIpText = new UI.Text({size: size, backgroundColor: backgroundColor, textAlign: textAlign});
@@ -105,16 +106,10 @@ mainWind.on('click', 'select', function(e) {
     noIpWind.add(noIpHead);
     noIpWind.add(noIpText);
     noIpWind.show();
-  } else {
-    foundbridge = true; 
   }
     
   // found bridge ip
-  if ( foundbridge ) {
-    
-    // determine ip address 
-    ipAddress = bridgeIp[0].internalipaddress;
-    console.log('Determined ipAddress: ' + ipAddress);
+  if ( ipAddress ) {
     
     // reload saved pairing
     userName = Settings.data('hueuser');
@@ -143,15 +138,43 @@ mainWind.on('click', 'select', function(e) {
     // pairing found
     if ( userName ) {
       
-      // load lights
-      
+      // reload saved pairing
+      lightBulbs = Settings.data('huelights');
+      console.log('Reloaded lightBulbs: ' + lightBulbs);
+
       // no lights found
+      if ( !lightBulbs ) {
+        var noLightsWind = new UI.Window();
+        var noLightsHead = new UI.Text({size: size, backgroundColor: backgroundColor, textAlign: textAlign});
+        var noLightsText = new UI.Text({size: size, backgroundColor: backgroundColor, textAlign: textAlign});
+        noLightsHead.position(position(-40));
+        noLightsText.position(position(-10));
+        noLightsHead.font(fontMedium);
+        noLightsText.font(fontSmall);
+        noLightsHead.text('Install Lights!');
+        noLightsText.text('Press Select.\nHold Select to Reset.');
+        noLightsWind.add(noLightsHead);
+        noLightsWind.add(noLightsText);
+        noLightsWind.show();
+        collectbridgelights();
+        noLightsWind.on('longClick', 'select', function(e) {
+          Settings.data('hueuser', null);
+          console.log('End-User Resetting!, userName Removed');
+          noLightsWind.hide();
+        });
+      }
       
       // lights found
-      
+      if ( lightBulbs ) {
+        for (var id in lightBulbs) {
+          if (lightBulbs.hasOwnProperty(id)) {
+            console.log(id + " -> " + lightBulbs[id]);
+          }
+        }
+      }
+     
     }
   }
-  
 });
 
 // functions
@@ -161,7 +184,13 @@ function collectbridgeip() {
   ajax({ url: url, method: 'get', type: 'json' },
     function(api) {
       console.log('Collected bridgeIp: ' + api);
-      Settings.data('hueip', api);
+      if ( api.length === 0 ) {
+        console.log('Collected ipAddress: null');
+        Settings.data('hueip', null);
+      } else {
+        console.log('Collected ipAddress: ' + api[0].internalipaddress);
+        Settings.data('hueip', api[0].internalipaddress);
+      }
     }
   );
 }
@@ -179,6 +208,22 @@ function collectbridgeuser() {
       } else {
         console.log('Collected userName: ' + json[0].error.description);
         Settings.data('hueuser', null);
+      }
+    }
+  );
+}
+
+function collectbridgelights() {
+  var url = 'http://' + ipAddress + '/api/' + userName;
+  ajax({ url: url, method: 'get', type: 'json' },
+    function(api) {
+      console.log('Collected bridgeData: ' + api);
+      if ('lights' in api) {
+        console.log('Collected lights: ' + api.lights);
+        Settings.data('huelights', api.lights);
+      } else {
+        console.log('Collected lights: null');
+        Settings.data('huelights', null);
       }
     }
   );
