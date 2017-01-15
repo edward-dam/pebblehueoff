@@ -18,7 +18,11 @@ var Settings = require('pebblejs/settings');
 var window = new UI.Window();
 var windowSize = window.size();
 var size = new Vector2(windowSize.x, windowSize.y);
+var icon = 'images/menu_icon.png';
 var backgroundColor = 'black';
+var highlightBackgroundColor = 'white';
+var textColor = 'white';
+var highlightTextColor = 'black';
 var textAlign = 'center';
 var fontLarge = 'gothic-28-bold';
 var fontMedium = 'gothic-24-bold';
@@ -138,7 +142,7 @@ mainWind.on('click', 'select', function(e) {
     // pairing found
     if ( userName ) {
       
-      // reload saved pairing
+      // reload saved lights
       lightBulbs = Settings.data('huelights');
       console.log('Reloaded lightBulbs: ' + lightBulbs);
 
@@ -166,11 +170,24 @@ mainWind.on('click', 'select', function(e) {
       
       // lights found
       if ( lightBulbs ) {
+        var countLights = 0;
+        var lightsMenu = new UI.Menu({
+          textColor: textColor, highlightBackgroundColor: highlightBackgroundColor,
+          backgroundColor: backgroundColor, highlightTextColor: highlightTextColor, 
+          status: { separator: 'none', color: textColor, backgroundColor: backgroundColor }
+        });
+        var section = {title: 'Light Bulbs'};
+        lightsMenu.section(0, section);
         for (var id in lightBulbs) {
           if (lightBulbs.hasOwnProperty(id)) {
             console.log(id + " -> " + lightBulbs[id]);
+            lightsMenu.item(0, countLights, { 
+              title: lightBulbs[id].name, subtitle: 'On: ' + lightBulbs[id].state.on, icon: icon
+            });
+            countLights++;
           }
         }
+        lightsMenu.show();
       }
      
     }
