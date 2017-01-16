@@ -146,21 +146,35 @@ mainWind.on('click', 'select', function(e) {
       lightBulbs = Settings.data('huelights');
       console.log('Reloaded lightBulbs: ' + lightBulbs);
 
+      // discover lights
+      if ( lightBulbs === undefined ) {
+        var discoverWind = new UI.Window();
+        var discoverText = new UI.Text({size: size, backgroundColor: backgroundColor, textAlign: textAlign});
+        discoverText.position(position(-20));
+        discoverText.font(fontMedium);
+        discoverText.text('Installing Lights...');
+        discoverWind.add(discoverText);
+        collectbridgelights();
+        discoverWind.show();
+        setTimeout(function() {
+          discoverWind.hide();
+        }, 2000);
+      }
+
       // no lights found
-      if ( !lightBulbs ) {
+      if ( lightBulbs === null ) {
         var noLightsWind = new UI.Window();
         var noLightsHead = new UI.Text({size: size, backgroundColor: backgroundColor, textAlign: textAlign});
         var noLightsText = new UI.Text({size: size, backgroundColor: backgroundColor, textAlign: textAlign});
-        noLightsHead.position(position(-40));
-        noLightsText.position(position(-10));
+        noLightsHead.position(position(-30));
+        noLightsText.position(position(0));
         noLightsHead.font(fontMedium);
         noLightsText.font(fontSmall);
-        noLightsHead.text('Install Lights!');
-        noLightsText.text('Press Select.\nHold Select to Reset.');
+        noLightsHead.text('No Lights Found!');
+        noLightsText.text('Unpair: Hold Select');
         noLightsWind.add(noLightsHead);
         noLightsWind.add(noLightsText);
         noLightsWind.show();
-        collectbridgelights();
         noLightsWind.on('longClick', 'select', function(e) {
           Settings.data('hueuser', null);
           console.log('End-User Resetting!, userName Removed');
@@ -170,6 +184,8 @@ mainWind.on('click', 'select', function(e) {
       
       // lights found
       if ( lightBulbs ) {
+        
+        // list light bulbs
         var countLights = 0;
         var lightsMenu = new UI.Menu({
           textColor: textColor, highlightBackgroundColor: highlightBackgroundColor,
@@ -180,14 +196,40 @@ mainWind.on('click', 'select', function(e) {
         lightsMenu.section(0, section);
         for (var id in lightBulbs) {
           if (lightBulbs.hasOwnProperty(id)) {
-            console.log(id + " -> " + lightBulbs[id]);
+            console.log("Menu Item: " + countLights + " -> lightID: " + id + " -> " + lightBulbs[id]);
+            var lightState;
+            if ( lightBulbs[id].state.reachable === false ) {
+              lightState = 'Unreachable';
+            } else {
+              if ( lightBulbs[id].state.on === true ) {
+                lightState = 'State: On';
+              } else {
+                lightState = 'State: Off';
+              }
+            }
             lightsMenu.item(0, countLights, { 
-              title: lightBulbs[id].name, subtitle: 'On: ' + lightBulbs[id].state.on, icon: icon
+              title: lightBulbs[id].name, subtitle: lightState, icon: icon
             });
+            window["item" + countLights] = id;
             countLights++;
           }
         }
         lightsMenu.show();
+        mainWind.hide();
+        
+        // lights switch on/off
+        lightsMenu.on('select', function(e) {
+          console.log('Selected Item: ' + e.itemIndex + " -> lightID: " + window["item" + e.itemIndex]);
+          if ( lightBulbs[window["item" + e.itemIndex]].state.reachable === true ) {
+            if ( lightBulbs[window["item" + e.itemIndex]].state.on === true ) {
+              switchlight(window["item" + e.itemIndex], false);
+              lightsMenu.item(0, e.itemIndex, { subtitle: 'State: Off' });
+            } else {
+              switchlight(window["item" + e.itemIndex], true);
+              lightsMenu.item(0, e.itemIndex, { subtitle: 'State: On' });
+            }
+          }
+        });
       }
      
     }
@@ -244,4 +286,16 @@ function collectbridgelights() {
       }
     }
   );
+}
+
+function switchlight(id, state) {
+  var url = 'http://' + ipAddress + '/api' + userName + '/lights/' + id + '/state' ;
+  var data;
+  if ( state === true ) {
+    data = '{"on":true}';
+  } else {
+    data = '{"on":false}';
+  }
+  ajax({ url: url, method: 'put', type: 'text', data: data });
+  console.log('Switched Light: ' + id + ' ' + state);
 }
