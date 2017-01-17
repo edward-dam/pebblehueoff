@@ -9,6 +9,7 @@
 ![basalt.png](/assets/basalt.png)
 ![basalt-pair.png](/assets/basalt-pair.png)
 ![basalt-lights.png](/assets/basalt-lights.png)
+![basalt-brightness.png](/assets/basalt-brightness.png)
 
 ###banner
 
