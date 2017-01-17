@@ -239,28 +239,27 @@ mainWind.on('click', 'select', function(e) {
         lightsMenu.on('longSelect', function(e) {
           console.log('LongSelected Item: ' + e.itemIndex + " -> lightID: " + window["item" + e.itemIndex]);
           
-          // only if light is reachable and on
-          if ( lightBulbs[window["item" + e.itemIndex]].state.reachable === true &&
-               lightBulbs[window["item" + e.itemIndex]].state.on === true ) {
+          // only if light is reachable
+          if ( lightBulbs[window["item" + e.itemIndex]].state.reachable === true ) {
             var userBright;
-            var hueBright = lightBulbs[window["item" + e.itemIndex]].state.bri;
-            if ( hueBright <= 32 ) {
-              userBright=1;
-              lightBulbs[window["item" + e.itemIndex]].state.bri = 1;
-            } else if ( hueBright > 32 && hueBright <= 96 ) {
-              userBright=2;
-              lightBulbs[window["item" + e.itemIndex]].state.bri = 64;
-            } else if ( hueBright > 96 && hueBright <= 160 ) {
-              userBright=3;
-              lightBulbs[window["item" + e.itemIndex]].state.bri = 128;
-            } else if ( hueBright > 160 && hueBright <= 224 ) {
-              userBright=4;
-              lightBulbs[window["item" + e.itemIndex]].state.bri = 192;
-            } else if ( hueBright > 224 ) {
-              userBright=5;
-              lightBulbs[window["item" + e.itemIndex]].state.bri = 254;
+            if ( lightBulbs[window["item" + e.itemIndex]].state.on === true ) {
+              var hueBright = lightBulbs[window["item" + e.itemIndex]].state.bri;
+              if ( hueBright <= 32 ) {
+                userBright=1;
+              } else if ( hueBright > 32 && hueBright <= 96 ) {
+                userBright=2;
+              } else if ( hueBright > 96 && hueBright <= 160 ) {
+                userBright=3;
+              } else if ( hueBright > 160 && hueBright <= 224 ) {
+                userBright=4;
+              } else if ( hueBright > 224 ) {
+                userBright=5;
+              }
+              console.log('Light Brightness: ' + hueBright + ' -> User Brightness: ' + userBright);
+            } else {
+              userBright=0;
+              console.log('Light Brightness: Off -> User Brightness: ' + userBright);
             }
-            console.log('Light Brightness: ' + hueBright + ' -> User Brightness: ' + userBright);
             
             // display brightness screen
             var brightnessWind = new UI.Window();
@@ -287,28 +286,36 @@ mainWind.on('click', 'select', function(e) {
             brightnessWind.on('click', 'up', function() {
               if ( userBright === 5 ) {
                 console.log('Increase Brightness -> Max');
-                lightBulbs[window["item" + e.itemIndex]].state.bri = 254;
                 adjustbrightness(window["item" + e.itemIndex], userBright);
+                lightBulbs[window["item" + e.itemIndex]].state.bri = 254;
               } else if ( userBright === 4 ) {
                 console.log('Increase Brightness -> 5');
                 userBright=5;
-                lightBulbs[window["item" + e.itemIndex]].state.bri = 254;
                 adjustbrightness(window["item" + e.itemIndex], userBright);
+                lightBulbs[window["item" + e.itemIndex]].state.bri = 254;
               } else if ( userBright === 3 ) {
                 console.log('Increase Brightness -> 4');
                 userBright=4;
-                lightBulbs[window["item" + e.itemIndex]].state.bri = 192;
                 adjustbrightness(window["item" + e.itemIndex], userBright);
+                lightBulbs[window["item" + e.itemIndex]].state.bri = 192;
               } else if ( userBright === 2 ) {
                 console.log('Increase Brightness -> 3');
                 userBright=3;
-                lightBulbs[window["item" + e.itemIndex]].state.bri = 128;
                 adjustbrightness(window["item" + e.itemIndex], userBright);
+                lightBulbs[window["item" + e.itemIndex]].state.bri = 128;
               } else if ( userBright === 1 ) {
                 console.log('Increase Brightness -> 2');
                 userBright=2;
-                lightBulbs[window["item" + e.itemIndex]].state.bri = 64;
                 adjustbrightness(window["item" + e.itemIndex], userBright);
+                lightBulbs[window["item" + e.itemIndex]].state.bri = 64;
+              } else if ( userBright === 0) {
+                console.log('Increase Brightness -> 1');
+                userBright=1;
+                switchlight(window["item" + e.itemIndex], true);
+                adjustbrightness(window["item" + e.itemIndex], userBright);
+                lightsMenu.item(0, e.itemIndex, { subtitle: 'State: On' });
+                lightBulbs[window["item" + e.itemIndex]].state.bri = 1;
+                lightBulbs[window["item" + e.itemIndex]].state.on = true;
               }
             });
                               
@@ -316,34 +323,34 @@ mainWind.on('click', 'select', function(e) {
             brightnessWind.on('click', 'down', function() {
               if ( userBright === 1 ) {
                 console.log('Decrease Brightness -> Min');
-                lightBulbs[window["item" + e.itemIndex]].state.bri = 1;
                 adjustbrightness(window["item" + e.itemIndex], userBright);
+                lightBulbs[window["item" + e.itemIndex]].state.bri = 1;
               } else if ( userBright === 2 ) {
                 console.log('Decrease Brightness -> 1');
                 userBright=1;
-                lightBulbs[window["item" + e.itemIndex]].state.bri = 1;
                 adjustbrightness(window["item" + e.itemIndex], userBright);
+                lightBulbs[window["item" + e.itemIndex]].state.bri = 1;
               } else if ( userBright === 3 ) {
                 console.log('Decrease Brightness -> 2');
                 userBright=2;
-                lightBulbs[window["item" + e.itemIndex]].state.bri = 64;
                 adjustbrightness(window["item" + e.itemIndex], userBright);
+                lightBulbs[window["item" + e.itemIndex]].state.bri = 64;
               } else if ( userBright === 4 ) {
                 console.log('Decrease Brightness -> 3');
                 userBright=3;
-                lightBulbs[window["item" + e.itemIndex]].state.bri = 128;
                 adjustbrightness(window["item" + e.itemIndex], userBright);
+                lightBulbs[window["item" + e.itemIndex]].state.bri = 128;
               } else if ( userBright === 5 ) {
                 console.log('Decrease Brightness -> 4');
                 userBright=4;
-                lightBulbs[window["item" + e.itemIndex]].state.bri = 192;
                 adjustbrightness(window["item" + e.itemIndex], userBright);
+                lightBulbs[window["item" + e.itemIndex]].state.bri = 192;
               }
             });
             
-          // if light is off or unreachable
+          // if light is unreachable
           } else {
-            console.log('Light Bulb: Off or Unreachable');
+            console.log('Light Bulb: Unreachable');
           }
           
           // function adjust brightness
