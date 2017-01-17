@@ -27,7 +27,7 @@ var textAlign = 'center';
 var fontLarge = 'gothic-28-bold';
 var fontMedium = 'gothic-24-bold';
 var fontSmall = 'gothic-18-bold';
-//var fontXSmall = 'gothic-14-bold';
+var fontXSmall = 'gothic-14-bold';
 function position(height){
   return new Vector2(0, windowSize.y / 2 + height);
 }
@@ -82,7 +82,7 @@ mainWind.on('click', 'down', function(e) {
   downText.position(position(-5));
   downHead.font(fontMedium);
   downText.font(fontSmall);
-  downHead.text('Hue Off v1.0');
+  downHead.text('Hue Off v1.1');
   downText.text('by Edward Dam');
   downWind.add(downHead);
   downWind.add(downText);
@@ -230,10 +230,131 @@ mainWind.on('click', 'select', function(e) {
               lightBulbs[window["item" + e.itemIndex]].state.on = true;
               lightsMenu.item(0, e.itemIndex, { subtitle: 'State: On' });
             }
+          } else {
+            console.log('Light Bulb: Unreachable');
+          }
+        });
+
+        // lights brightness
+        lightsMenu.on('longSelect', function(e) {
+          console.log('LongSelected Item: ' + e.itemIndex + " -> lightID: " + window["item" + e.itemIndex]);
+          
+          // only if light is reachable and on
+          if ( lightBulbs[window["item" + e.itemIndex]].state.reachable === true &&
+               lightBulbs[window["item" + e.itemIndex]].state.on === true ) {
+            var userBright;
+            var hueBright = lightBulbs[window["item" + e.itemIndex]].state.bri;
+            if ( hueBright <= 32 ) {
+              userBright=1;
+              lightBulbs[window["item" + e.itemIndex]].state.bri = 1;
+            } else if ( hueBright > 32 && hueBright <= 96 ) {
+              userBright=2;
+              lightBulbs[window["item" + e.itemIndex]].state.bri = 64;
+            } else if ( hueBright > 96 && hueBright <= 160 ) {
+              userBright=3;
+              lightBulbs[window["item" + e.itemIndex]].state.bri = 128;
+            } else if ( hueBright > 160 && hueBright <= 224 ) {
+              userBright=4;
+              lightBulbs[window["item" + e.itemIndex]].state.bri = 192;
+            } else if ( hueBright > 224 ) {
+              userBright=5;
+              lightBulbs[window["item" + e.itemIndex]].state.bri = 254;
+            }
+            console.log('Light Brightness: ' + hueBright + ' -> User Brightness: ' + userBright);
+            
+            // display brightness screen
+            var brightnessWind = new UI.Window();
+            var brightnessHead = new UI.Text({size: size, backgroundColor: backgroundColor, textAlign: textAlign});
+            var brightnessText = new UI.Text({size: size, textAlign: textAlign,
+              color: highlightTextColor, backgroundColor: highlightBackgroundColor
+            });
+            var brightnessInfo = new UI.Text({size: size, backgroundColor: backgroundColor, textAlign: textAlign});
+            brightnessHead.position(position(-70));
+            brightnessText.position(position(-28));
+            brightnessInfo.position(position(+33));
+            brightnessHead.font(fontMedium);
+            brightnessText.font(fontSmall);
+            brightnessInfo.font(fontXSmall);
+            brightnessHead.text(lightBulbs[window["item" + e.itemIndex]].name);
+            brightnessText.text('\nBrightness: ' + userBright);
+            brightnessInfo.text('\n[max:5 - up/down]');
+            brightnessWind.add(brightnessHead);
+            brightnessWind.add(brightnessText);
+            brightnessWind.add(brightnessInfo);
+            brightnessWind.show();
+            
+            // increase brightness
+            brightnessWind.on('click', 'up', function() {
+              if ( userBright === 5 ) {
+                console.log('Increase Brightness -> Max');
+                lightBulbs[window["item" + e.itemIndex]].state.bri = 254;
+                adjustbrightness(window["item" + e.itemIndex], userBright);
+              } else if ( userBright === 4 ) {
+                console.log('Increase Brightness -> 5');
+                userBright=5;
+                lightBulbs[window["item" + e.itemIndex]].state.bri = 254;
+                adjustbrightness(window["item" + e.itemIndex], userBright);
+              } else if ( userBright === 3 ) {
+                console.log('Increase Brightness -> 4');
+                userBright=4;
+                lightBulbs[window["item" + e.itemIndex]].state.bri = 192;
+                adjustbrightness(window["item" + e.itemIndex], userBright);
+              } else if ( userBright === 2 ) {
+                console.log('Increase Brightness -> 3');
+                userBright=3;
+                lightBulbs[window["item" + e.itemIndex]].state.bri = 128;
+                adjustbrightness(window["item" + e.itemIndex], userBright);
+              } else if ( userBright === 1 ) {
+                console.log('Increase Brightness -> 2');
+                userBright=2;
+                lightBulbs[window["item" + e.itemIndex]].state.bri = 64;
+                adjustbrightness(window["item" + e.itemIndex], userBright);
+              }
+            });
+                              
+            // decrease brightness
+            brightnessWind.on('click', 'down', function() {
+              if ( userBright === 1 ) {
+                console.log('Decrease Brightness -> Min');
+                lightBulbs[window["item" + e.itemIndex]].state.bri = 1;
+                adjustbrightness(window["item" + e.itemIndex], userBright);
+              } else if ( userBright === 2 ) {
+                console.log('Decrease Brightness -> 1');
+                userBright=1;
+                lightBulbs[window["item" + e.itemIndex]].state.bri = 1;
+                adjustbrightness(window["item" + e.itemIndex], userBright);
+              } else if ( userBright === 3 ) {
+                console.log('Decrease Brightness -> 2');
+                userBright=2;
+                lightBulbs[window["item" + e.itemIndex]].state.bri = 64;
+                adjustbrightness(window["item" + e.itemIndex], userBright);
+              } else if ( userBright === 4 ) {
+                console.log('Decrease Brightness -> 3');
+                userBright=3;
+                lightBulbs[window["item" + e.itemIndex]].state.bri = 128;
+                adjustbrightness(window["item" + e.itemIndex], userBright);
+              } else if ( userBright === 5 ) {
+                console.log('Decrease Brightness -> 4');
+                userBright=4;
+                lightBulbs[window["item" + e.itemIndex]].state.bri = 192;
+                adjustbrightness(window["item" + e.itemIndex], userBright);
+              }
+            });
+            
+          // if light is off or unreachable
+          } else {
+            console.log('Light Bulb: Off or Unreachable');
+          }
+          
+          // function adjust brightness
+          function adjustbrightness(id, newBright) {
+            changebrightness(id, newBright);
+            brightnessText.text('\nBrightness: ' + newBright);
+            brightnessWind.add(brightnessText);
+            brightnessWind.add(brightnessInfo);
           }
         });
       }
-     
     }
   }
 });
@@ -300,4 +421,22 @@ function switchlight(id, state) {
   }
   ajax({ url: url, method: 'put', type: 'text', data: data });
   console.log('Switched Light: ' + id + ' ' + state);
+}
+
+function changebrightness(id, brightness) {
+  var url = 'http://' + ipAddress + '/api' + userName + '/lights/' + id + '/state' ;
+  var data;
+  if ( brightness === 1 ) {
+    data = '{"bri":1}';
+  } else if ( brightness === 2 ) {
+    data = '{"bri":64}';
+  } else if ( brightness === 3 ) {
+    data = '{"bri":128}';
+  } else if ( brightness === 4 ) {
+    data = '{"bri":192}';
+  } else if ( brightness === 5 ) {
+    data = '{"bri":254}';
+  }
+  ajax({ url: url, method: 'put', type: 'text', data: data });
+  console.log('Adjusted Light: ' + id + ' -> Brightness: ' + brightness);
 }
