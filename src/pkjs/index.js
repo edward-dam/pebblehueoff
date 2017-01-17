@@ -223,9 +223,11 @@ mainWind.on('click', 'select', function(e) {
           if ( lightBulbs[window["item" + e.itemIndex]].state.reachable === true ) {
             if ( lightBulbs[window["item" + e.itemIndex]].state.on === true ) {
               switchlight(window["item" + e.itemIndex], false);
+              lightBulbs[window["item" + e.itemIndex]].state.on = false;
               lightsMenu.item(0, e.itemIndex, { subtitle: 'State: Off' });
             } else {
               switchlight(window["item" + e.itemIndex], true);
+              lightBulbs[window["item" + e.itemIndex]].state.on = true;
               lightsMenu.item(0, e.itemIndex, { subtitle: 'State: On' });
             }
           }

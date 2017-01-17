@@ -5,12 +5,12 @@
         "pebblejs": "^1.0.0"
     },
     "keywords": [],
-    "name": "hue-off-v1.0",
+    "name": "hue-off-v1.1",
     "pebble": {
         "capabilities": [
             "configurable"
         ],
-        "displayName": "Hue Off v1.0",
+        "displayName": "Hue Off v1.1",
         "enableMultiJS": true,
         "messageKeys": [
             "message_keys"
@@ -55,5 +55,5 @@
             "watchface": false
         }
     },
-    "version": "1.0.0"
+    "version": "1.1.0"
 }
