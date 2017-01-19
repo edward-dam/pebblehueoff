@@ -3,7 +3,7 @@
 module.exports = [
   {
     "type": "heading",
-    "defaultValue": "Hue Off v1.0"
+    "defaultValue": "Hue Off v1.1"
   },
   {
     "type": "text",
