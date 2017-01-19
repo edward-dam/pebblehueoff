@@ -39,10 +39,13 @@ var lightBulbs = Settings.data('huelights');
 console.log('Saved ipAddress: ' + Settings.data('hueip'));
 console.log('Saved userName: ' + userName);
 console.log('Saved lightBulbs: ' + lightBulbs);
-collectbridgeip();
-if ( ipAddress && userName ) {
-  collectbridgelights();
-}
+collectbridgeip(function() {
+  ipAddress = Settings.data('hueip');
+  console.log('Load ipAddress: ' + Settings.data('hueip'));
+  if ( ipAddress && userName ) {
+    collectbridgelights();
+  }
+});
 
 // main screen
 var mainWind = new UI.Window();
@@ -368,7 +371,7 @@ mainWind.on('click', 'select', function(e) {
 
 // functions
 
-function collectbridgeip() {
+function collectbridgeip(callback) {
   var url = 'https://www.meethue.com/api/nupnp' ;
   ajax({ url: url, method: 'get', type: 'json' },
     function(api) {
@@ -380,6 +383,7 @@ function collectbridgeip() {
         console.log('Collected ipAddress: ' + api[0].internalipaddress);
         Settings.data('hueip', api[0].internalipaddress);
       }
+      callback();
     }
   );
 }
